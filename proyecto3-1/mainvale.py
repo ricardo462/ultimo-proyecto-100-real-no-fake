@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft
-from scipy.signal import decimate
+from scipy.signal import decimate, firls
 
 if __name__ == '__main__':
     fase = []
@@ -26,3 +26,14 @@ if __name__ == '__main__':
     dec_espectro = 20*np.log10(espec)
 
     fir_df = decimate(signal, 8, ftype='fir')
+
+    dif = firls(29, [0, 0.9], [0, 1.0])
+
+    fir_df_norm = fir_df/abs(fir_df)
+
+    fir_real = fir_df_norm.real
+    fir_imag = fir_df_norm.imag
+
+    y_FM_dem = (fir_real * np.convolve(fir_imag, dif, 'same') - fir_imag*np.convolve(fir_real,dif,'same'))/(fir_real**2 + fir_imag**2)
+
+    
