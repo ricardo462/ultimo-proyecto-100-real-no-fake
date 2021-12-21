@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import fft
 from scipy.signal import decimate, firls
+import soundfile as sf
 
 if __name__ == '__main__':
     fase = []
@@ -36,4 +37,9 @@ if __name__ == '__main__':
 
     y_FM_dem = (fir_real * np.convolve(fir_imag, dif, 'same') - fir_imag*np.convolve(fir_real,dif,'same'))/(fir_real**2 + fir_imag**2)
 
-    
+    df = decimate(y_FM_dem,10,ftype='fir')
+
+    freqs = [11e3, 12e3, 13e3, 14e3]
+
+    for freq in freqs:
+        sf.write(str(freq)+'sescucha.wav', df , int(freq))
