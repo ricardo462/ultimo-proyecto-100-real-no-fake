@@ -14,5 +14,5 @@ def plot_fft(signal:np.array, time_step: float, signal_name: str) -> None:
     plt.title('Espectro de muestras')
     plt.xlabel('Frecuencia (Hz)')
     plt.ylabel('Magnitud (dB)')
-    plt.savefig(f'fft_{signal_name}')
+    plt.savefig(f'figs/fft_{signal_name}')
     plt.show()
