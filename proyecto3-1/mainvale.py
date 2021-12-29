@@ -7,7 +7,7 @@ import soundfile as sf
 if __name__ == '__main__':
     fase = []
     cuadratura = []
-    f = open("muestras/muestras_101_7.bin","rb")
+    f = open("muestras/muestras_TV.bin","rb")
     data = np.fromfile(f, 'int8')
 
     signal, fase, cuadratura = [], [], []
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     df = decimate(y_FM_dem,10,ftype='fir')
 
-    freqs = [11e3, 12e3, 13e3, 14e3]
+    freqs = [10.53, 11e3, 12e3, 13e3]
 
     for freq in freqs:
-        sf.write(str(freq)+'sescucha.wav', df , int(freq))
+        sf.write(str(freq)+'tv.wav', df , int(freq))
