@@ -5,41 +5,43 @@ from scipy.signal import decimate, firls
 import soundfile as sf
 
 if __name__ == '__main__':
-    fase = []
-    cuadratura = []
-    f = open("muestras/muestras_TV.bin","rb")
-    data = np.fromfile(f, 'int8')
+    muestras = ['muestras_88_9.bin', 'muestras_94_1.bin', 'muestras_101_7.bin', 'muestras_104_9.bin', 'muestras_TV.bin']
 
-    signal, fase, cuadratura = [], [], []
+    for muestra in muestras: 
+        fase = []
+        cuadratura = []
+        f = open("muestras/"+muestra,"rb")
+        data = np.fromfile(f, 'int8')
 
-    for i, value in enumerate(data):
-        if i%2 == 0:
-            fase.append(value)
-        else:
-            cuadratura.append(value)
+        signal, fase, cuadratura = [], [], []
 
-    for i in range(len(fase)):
-        signal.append(fase[i] + 1j* cuadratura[i])
+        for i, value in enumerate(data):
+            if i%2 == 0:
+                fase.append(value)
+            else:
+                cuadratura.append(value)
 
-    espectro = fft(signal)
-    espec = espectro/max(espectro)
+        for i in range(len(fase)):
+            signal.append(fase[i] + 1j* cuadratura[i])
 
-    dec_espectro = 20*np.log10(espec)
+        espectro = fft(signal)
+        espec = espectro/max(espectro)
 
-    fir_df = decimate(signal, 8, ftype='fir')
+        dec_espectro = 20*np.log10(espec)
 
-    dif = firls(29, [0, 0.9], [0, 1.0])
+        fir_df = decimate(signal, 8, ftype='fir')
 
-    fir_df_norm = fir_df/abs(fir_df)
+        dif = firls(29, [0, 0.9], [0, 1.0])
 
-    fir_real = fir_df_norm.real
-    fir_imag = fir_df_norm.imag
+        fir_df_norm = fir_df/abs(fir_df)
 
-    y_FM_dem = (fir_real * np.convolve(fir_imag, dif, 'same') - fir_imag*np.convolve(fir_real,dif,'same'))/(fir_real**2 + fir_imag**2)
+        fir_real = fir_df_norm.real
+        fir_imag = fir_df_norm.imag
 
-    df = decimate(y_FM_dem,10,ftype='fir')
+        y_FM_dem = (fir_real * np.convolve(fir_imag, dif, 'same') - fir_imag*np.convolve(fir_real,dif,'same'))/(fir_real**2 + fir_imag**2)
 
-    freqs = [10.53, 11e3, 12e3, 13e3]
+        df = decimate(y_FM_dem,10,ftype='fir')
 
-    for freq in freqs:
-        sf.write(str(freq)+'tv.wav', df , int(freq))
+        freqs = [10.5e3, 11e3, 12e3, 13e3]
+        for freq in freqs:
+            sf.write("audios/"+muestra+str(freq)+'.wav', df , int(freq))
